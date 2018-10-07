@@ -1,0 +1,5 @@
+cmake_minimum_required (VERSION 2.6)
+set(CMAKE_CXX_STANDARD 14)
+project (MyProject)
+# add_executable(myexec src/VirtualMachine.cpp src/Bytecode.h)
+add_executable(main src/main.cpp src/VirtualMachine.cpp src/VirtualMachine.h src/Bytecode.h)
