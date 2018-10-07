@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <iomanip>
 
-VirtualMachine::VirtualMachine(vector<int> code, int numGlobals, vector<FunctionMetaData> functionMeta) {
+VirtualMachine::VirtualMachine(vector<int> code, int numGlobals, vector<shared_ptr<FunctionMetaData>> functionMeta) {
     this->code = code;
     vector<int>(numGlobals).swap(globals);
     vector<int>(DEFAULT_STACK_SIZE).swap(stack);
@@ -23,7 +23,7 @@ void VirtualMachine::simulateCpu() {
     int opcode = code[ip];
     int a, b, addr, regNum;
     while (opcode != HALT && ip < code.size()) {
-        if(TRACE) cerr << disInstr();
+        if(TRACE) cerr << disInstr() << "\t";
         ip++;
         switch(opcode) {
             case IADD:
@@ -121,7 +121,7 @@ void VirtualMachine::simulateCpu() {
             {
                 // expects all args are already on the stack
                 int funcIndex = code[ip++]; // index of the target function in fn metadata array
-                int numArgs = metadata[funcIndex].numArgs;
+                int numArgs = metadata[funcIndex]->numArgs;
 
                 // set context to new context which points to: parent context, return address, function metadata
                 ctx = make_shared<Context>(ctx, ip, metadata[funcIndex]); 
@@ -132,7 +132,7 @@ void VirtualMachine::simulateCpu() {
                     ctx->locals[i] = stack[firstArg + i];
                 }
                 sp -= numArgs; // args removed from the stack
-                ip = metadata[funcIndex].address; // jump to the function location
+                ip = metadata[funcIndex]->address; // jump to the function location
                 break;
             }
             case RET:
@@ -147,11 +147,11 @@ void VirtualMachine::simulateCpu() {
                     string(" at ip=") + to_string(ip-1));
             }
         }
-        if(TRACE) cerr << stringifyStack() << " " << stringifyCallStack() << endl;
+        if(TRACE) cerr << stringifyStack() << "\t" << stringifyCallStack() << "\t" << endl;
         opcode = code[ip];
     }
     if(TRACE) cerr << disInstr();
-    if(TRACE) cerr << stringifyStack() << endl;
+    if(TRACE) cerr << "\t\t\t" << stringifyStack() << endl;
     if(TRACE) cerr << stringifyDataMemory() << endl;
 }
 
@@ -162,7 +162,7 @@ string VirtualMachine::disInstr() {
     ss << setw(4) << ip << ":\t" << opName;
     int numArgs = BYTECODES[opcode].args;
     if (opcode == CALL) {
-        ss << " " << metadata[code[ip+1]].name;
+        ss << " " << metadata[code[ip+1]]->name;
     }
     else if (numArgs > 0) {
         vector<string> operands;
@@ -181,11 +181,33 @@ string VirtualMachine::disInstr() {
 }
 
 string VirtualMachine::stringifyStack() {
-    return "";
+    ostringstream ss;
+    ss << "stack=[";
+    for(int i = 0; i <= sp; i++) {
+        int o = stack[i];
+        ss << " ";
+        ss << o;
+    }
+    ss << " ]";
+    return ss.str();
 }
 
 string VirtualMachine::stringifyCallStack() {
-    return "";
+    vector<string> stack;
+    shared_ptr<Context> c = ctx;
+    while(c.get() != nullptr) {
+        if (c->metadata != nullptr) {
+            stack.insert(stack.begin(), c->metadata->name);
+        }
+        c = c->invokingContext;
+    }
+    ostringstream ss;
+    ss << "calls=(";
+    for(auto&& s : stack) {
+        ss << s << ",";
+    }
+    ss << ")";
+    return ss.str();
 }
 
 string VirtualMachine::stringifyDataMemory() {

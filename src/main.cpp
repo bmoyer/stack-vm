@@ -19,11 +19,12 @@ void addFunction()
         ICONST, 28,
         CALL, 1, // this will move arguments from stack to registers
         PRINT,
-        HALT};
+        HALT
+        };
 
-    vector<FunctionMetaData> fmd{
-        FunctionMetaData("main", 0, 0, 9),
-        FunctionMetaData("addFunction", 3, 3, 0),
+    vector<shared_ptr<FunctionMetaData>> fmd {
+        make_shared<FunctionMetaData>("main", 0, 0, 9),
+        make_shared<FunctionMetaData>("addFunction", 3, 3, 0),
     };
 
     VirtualMachine vm(code, 0, fmd);
@@ -34,7 +35,9 @@ void factorial()
 {
     //vector<int> code{ICONST, 7, ICONST, 35, IADD, PRINT, HALT};
     vector<int> code{ICONST, 7, STORE, 0};
-    vector<FunctionMetaData> fmd{FunctionMetaData("main", 0, 1, 0)};
+    vector<shared_ptr<FunctionMetaData>> fmd {
+        make_shared<FunctionMetaData>("main", 0, 1, 0)
+    };
 
     // factorial
     vector<int> code2{
@@ -57,14 +60,15 @@ void factorial()
         RET,       // 20
                    //.DEF MAIN: ARGS=0, LOCALS=0
                    // PRINT FACT(1)
-        ICONST, 5, // 21    <-- MAIN METHOD!
+        ICONST, 1, // 21    <-- MAIN METHOD!
         CALL, 1,   // 23
         PRINT,     // 25
         HALT       // 26
     };
-    vector<FunctionMetaData> fmd2{
-        FunctionMetaData("main", 0, 0, 21),
-        FunctionMetaData("factorial", 1, 0, 0)};
+    vector<shared_ptr<FunctionMetaData>> fmd2{
+        make_shared<FunctionMetaData>("main", 0, 0, 21),
+        make_shared<FunctionMetaData>("factorial", 1, 0, 0)
+    };
 
     VirtualMachine vm(code2, 0, fmd2);
     vm.exec(21);
@@ -73,7 +77,7 @@ void factorial()
 int main()
 {
     factorial();
-    addFunction();
+    //addFunction();
 
     return 0;
 }

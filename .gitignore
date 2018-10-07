@@ -27,9 +27,11 @@
 *.lib
 
 # Executables
+build/
 *.exe
 *.out
 *.app
 
-# Vim
+# Vim/VSC
 *.un~
+*.vscode
