@@ -23,7 +23,7 @@ void VirtualMachine::simulateCpu() {
     int opcode = code[ip];
     int a, b, addr, regNum;
     while (opcode != HALT && ip < code.size()) {
-        if(TRACE) cerr << disInstr() << "\t";
+        if(TRACE) cerr << stringifyInstruction() << "\t";
         ip++;
         switch(opcode) {
             case IADD:
@@ -141,6 +141,12 @@ void VirtualMachine::simulateCpu() {
                 ctx = ctx->invokingContext;
                 break;
             }
+            case DUP:
+            {
+                int top = stack[sp];
+                stack[++sp] = top;
+                break;
+            }
             default:
             {
                 throw runtime_error("invalid opcode " + opcode +
@@ -150,12 +156,12 @@ void VirtualMachine::simulateCpu() {
         if(TRACE) cerr << stringifyStack() << "\t" << stringifyCallStack() << "\t" << endl;
         opcode = code[ip];
     }
-    if(TRACE) cerr << disInstr();
+    if(TRACE) cerr << stringifyInstruction();
     if(TRACE) cerr << "\t\t\t" << stringifyStack() << endl;
     if(TRACE) cerr << stringifyDataMemory() << endl;
 }
 
-string VirtualMachine::disInstr() {
+string VirtualMachine::stringifyInstruction() {
     int opcode = code[ip];
     string opName = BYTECODES[opcode].name;
     ostringstream ss;

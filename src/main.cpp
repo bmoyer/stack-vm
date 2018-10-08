@@ -60,7 +60,7 @@ void factorial()
         RET,       // 20
                    //.DEF MAIN: ARGS=0, LOCALS=0
                    // PRINT FACT(1)
-        ICONST, 1, // 21    <-- MAIN METHOD!
+        ICONST, 5, // 21    <-- MAIN METHOD!
         CALL, 1,   // 23
         PRINT,     // 25
         HALT       // 26
@@ -74,10 +74,49 @@ void factorial()
     vm.exec(21);
 }
 
+void fib() {
+
+    vector<int> code {
+        LOAD, 0,
+        DUP, // stack= [N, N]
+        ICONST, 2,
+        ILT, // stack = [N, N<2]
+        BRF, 9, // jump past RET
+        RET,
+
+        ICONST, 1, // 9
+        ISUB, // stack = [N-1]
+        LOAD, 0, // stack = [N-1, N]
+        ICONST, 2, 
+        ISUB, // stack = [N-1, N-2]
+        CALL, 1,
+        STORE, 0,
+        CALL, 1,
+        LOAD, 0,
+        IADD,
+        RET,
+
+        ICONST, 20, // main() // 27
+        CALL, 1,
+        PRINT,
+        HALT
+    };
+
+    const int MAIN_FUNCTION = 27;
+    vector<shared_ptr<FunctionMetaData>> fmd {
+        make_shared<FunctionMetaData>("main", 0, 0, MAIN_FUNCTION),
+        make_shared<FunctionMetaData>("fibonacci", 1, 1, 0),
+    };
+
+    VirtualMachine vm(code, 0, fmd);
+    vm.exec(MAIN_FUNCTION);
+}
+
 int main()
 {
     factorial();
-    //addFunction();
+    addFunction();
+    fib();
 
     return 0;
 }

@@ -35,7 +35,7 @@ class VirtualMachine
   private:
     void simulateCpu();
 
-    string disInstr();
+    string stringifyInstruction();
     string stringifyStack();
     string stringifyCallStack();
     string stringifyDataMemory();
@@ -52,7 +52,7 @@ class VirtualMachine
     int ip;      // instruction pointer register
     int sp = -1; // stack pointer register
 
-    const int DEFAULT_STACK_SIZE = 1000;
-    const int DEFAULT_CALL_STACK_SIZE = 1000;
-    const bool TRACE = true;
+    const int DEFAULT_STACK_SIZE = 10000;
+    const int DEFAULT_CALL_STACK_SIZE = 10000;
+    const bool TRACE = false;
 };

@@ -22,7 +22,8 @@ enum OPCODE : unsigned char
     POP = 15,
     CALL = 16,
     RET = 17,
-    HALT = 18,
+    DUP = 18,
+    HALT = 19,
 };
 
 typedef struct Bytecode
@@ -51,5 +52,6 @@ const vector<Bytecode> BYTECODES = {
     Bytecode("pop", 0),
     Bytecode("call", 1), // call index of function in meta-info table
     Bytecode("ret", 0),
+    Bytecode("dup", 0),
     Bytecode("halt", 0),
     };
