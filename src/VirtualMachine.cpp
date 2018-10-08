@@ -4,6 +4,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <iomanip>
+#include <sstream>
 
 VirtualMachine::VirtualMachine(vector<int> code, int numGlobals, vector<shared_ptr<FunctionMetaData>> functionMeta) {
     this->code = code;
